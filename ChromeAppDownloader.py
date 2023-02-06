@@ -15,8 +15,8 @@ import platform
 
 import requests
 from urllib.parse import urlparse
-from os.path import join, dirname, basename
-
+from os.path import join, dirname, basename, exists
+from os import makedirs
 
 ARCH = platform.architecture()
 
@@ -36,6 +36,10 @@ class ChromeExtensionDownloader():
         arch = self.get_arch()
         extension_id, file_name = self.parse_extension_url(chrome_store_url=chrome_store_url)
         chrome_version = self.get_chrome_version(user_agent_ver)
+        
+        #Check if output directory exist. If not, create an output directory
+        if not exists(dest_dir):
+            makedirs(dest_dir)
 
         extension_url = self.ext_download_url.format(chrome_version=chrome_version, extension_id=extension_id, arch=arch)
         return extension_url, self.download_file(extension_url, dest_dir, file_name)
@@ -133,8 +137,17 @@ class ChromeExtensionDownloader():
 
 if __name__ == '__main__':
     #url = "https://chrome.google.com/webstore/detail/certisign-websigner/acfifjfajpekbmhmjppnmmjgmhjkildl"
-    urls = ["https://chrome.google.com/webstore/detail/foxyproxy-standard/gcknhkkoolaabfmlnjonogaaifnjlfnp", "https://chrome.google.com/webstore/detail/wappalyzer-technology-pro/gppongmhjkpfnbhagpmjfkannfbllamg", "https://chrome.google.com/webstore/detail/retirejs/moibopkbhjceeedibkbkbchbjnkadmom"]
+    urls = []
+    urls.append("https://chrome.google.com/webstore/detail/foxyproxy-standard/gcknhkkoolaabfmlnjonogaaifnjlfnp") #Foxy Proxy Standard
+    urls.append("https://chrome.google.com/webstore/detail/wappalyzer-technology-pro/gppongmhjkpfnbhagpmjfkannfbllamg") #Wappalyzer
+    urls.append("https://chrome.google.com/webstore/detail/retirejs/moibopkbhjceeedibkbkbchbjnkadmom") #RetireJS
+    urls.append("https://chrome.google.com/webstore/detail/saml-tracer/mpdajninpobndbfcldcmbpnnbhibjmch") #SAML-tracer
+    urls.append("https://chrome.google.com/webstore/detail/saml-ws-federation-and-oa/hkodokikbjolckghdnljbkbhacbhpnkb") #SAML, WS-Federation and OAuth 2.0 tracer
+    urls.append("https://chrome.google.com/webstore/detail/oauth-flows/dandckbjghfejnhmnhloigndkeabdbbo") #OAuth Flows
+    urls.append("https://chrome.google.com/webstore/detail/multilogin/ijfgglilaeakmoilplpcjcgjaoleopfi") #MultiLogin
+    urls.append("https://chrome.google.com/webstore/detail/lone-tab/dlgodcdpmjmeegcakjjldfobmooajhhe") #Lone Tab
+
     user_agent_ver = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36"
     for url in urls:
-        downloader = ChromeExtensionDownloader().download(url, user_agent_ver)
+        downloader = ChromeExtensionDownloader().download(url, user_agent_ver, "Extensions")
         print(downloader)
